@@ -1,6 +1,5 @@
 import os
 import sqlite3
-import json
 import requests
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
@@ -51,6 +50,18 @@ def get_db():
     return g.sqlite_db
 
 
+def http_post_request_to_postman():
+    postman_api_endpoint = "https://postman-echo.com/post"
+    postman_representation_data = {'api_key': 'aufhiuew65653'}
+    postman_representation_request = requests.post(url=postman_api_endpoint, data=postman_representation_data)
+
+    # Print the response from Postman
+    print(postman_representation_request)
+    print(postman_representation_request.json())
+
+    return postman_representation_request.status_code
+
+
 @app.teardown_appcontext
 def close_db(error):
     """Closes the database again at the end of the request."""
@@ -86,18 +97,15 @@ def add_entry():
     db.execute('INSERT INTO entries (title, text) VALUES (?, ?)',
                [title, text])
     db.commit()
-    flash('New entry was successfully posted')
 
-    # Send representation to postman-echo ver 1
-    postman_api_endpoint = "https://postman-echo.com/post"
-    postman_representation_data = {'api_key': 'aufhiuew65653'}
-    postman_representation_request = requests.post(url=postman_api_endpoint, data=postman_representation_data)
+    # Send representation to postman-echo and check the response code
+    postman_api_response = http_post_request_to_postman()
 
-    # Print the response from Postman
-    print(postman_representation_request)
-    print(postman_representation_request.json())
-
-    return redirect(url_for('show_entries'))
+    if postman_api_response == 200:
+        flash('New entry was successfully posted')
+        return redirect(url_for('show_entries'))
+    else:
+        return "error"
 
 
 @app.route('/login', methods=['GET', 'POST'])
