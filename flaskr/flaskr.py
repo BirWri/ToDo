@@ -51,7 +51,7 @@ def get_db():
 
 
 def http_post_request_to_postman():
-    """Sends an http post request to Postman-Echo with a specific apy-key. Returns status code"""
+    """Sends a http post request to Postman-Echo with a specific apy-key. Returns status code"""
 
     postman_api_endpoint = "https://postman-echo.com/post"
     postman_representation_data = {'api_key': 'aufhiuew65653'}
@@ -101,7 +101,6 @@ def add_entry():
                [title, text])
     db.commit()
 
-    # Send representation to postman-echo and returns the response code
     postman_api_response = http_post_request_to_postman()
 
     if postman_api_response == 200:
