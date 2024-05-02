@@ -50,11 +50,11 @@ def get_db():
     return g.sqlite_db
 
 
-def http_post_request_to_postman():
+def http_post_request_to_postman(new_entry_title):
     """Sends a http post request to Postman-Echo with a specific apy-key. Returns status code"""
 
     postman_api_endpoint = "https://postman-echo.com/post"
-    postman_representation_data = {'api_key': 'aufhiuew65653'}
+    postman_representation_data = {'new_entry_title': new_entry_title}
     postman_representation_request = requests.post(url=postman_api_endpoint, data=postman_representation_data)
 
     # Prints the responses from Postman for testing
@@ -101,12 +101,12 @@ def add_entry():
                [title, text])
     db.commit()
 
-    postman_api_response = http_post_request_to_postman()
+    postman_api_response = http_post_request_to_postman(new_entry_title=title)
 
     if postman_api_response == 200:
         print("Postman response 200")
     else:
-        print("Postman response is not 200")
+        print("Error with Postman")
 
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
