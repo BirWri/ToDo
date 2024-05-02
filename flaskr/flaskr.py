@@ -90,6 +90,7 @@ def search_results():
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
+
     title = request.form['title']
     text = request.form['text']
 
@@ -102,10 +103,12 @@ def add_entry():
     postman_api_response = http_post_request_to_postman()
 
     if postman_api_response == 200:
-        flash('New entry was successfully posted')
-        return redirect(url_for('show_entries'))
+        print("Postman response 200")
     else:
-        return "error"
+        print("Postman response is not 200")
+
+    flash('New entry was successfully posted')
+    return redirect(url_for('show_entries'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
