@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import json
+import requests
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
 
@@ -64,15 +66,37 @@ def show_entries():
     return render_template('show_entries.html', entries=entries)
 
 
+@app.route('/api/search', methods=['GET'])
+def search_results():
+    #Establish connection to the db and show all
+    db = get_db()
+    cur = db.execute('SELECT title, text FROM entries')
+    entries = cur.fetchall()
+    return "yay"
+
+
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
+    title = request.form['title']
+    text = request.form['text']
+
     db = get_db()
     db.execute('INSERT INTO entries (title, text) VALUES (?, ?)',
-               [request.form['title'], request.form['text']])
+               [title, text])
     db.commit()
     flash('New entry was successfully posted')
+
+    # Send representation to postman-echo ver 1
+    postman_api_endpoint = "https://postman-echo.com/post"
+    postman_representation_data = {'api_key': 'aufhiuew65653'}
+    postman_representation_request = requests.post(url=postman_api_endpoint, data=postman_representation_data)
+
+    # Print the response from Postman
+    print(postman_representation_request)
+    print(postman_representation_request.json())
+
     return redirect(url_for('show_entries'))
 
 
