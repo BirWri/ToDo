@@ -88,7 +88,7 @@ def search_results():
         return '"error":"No query parameter provided"', 400
 
     db = get_db()
-    cur = db.execute('SELECT * FROM entries WHERE title=?', (q,))
+    cur = db.execute('SELECT * FROM entries WHERE title LIKE ?', ('%' + q + '%',))
     entries = cur.fetchall()
 
     return jsonify([dict(ix) for ix in entries])
