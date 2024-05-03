@@ -1,8 +1,9 @@
 import os
 import sqlite3
 import requests
+import json
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-    render_template, flash
+    render_template, flash, jsonify
 
 app = Flask(__name__)  # create the application instance :)
 app.config.from_object(__name__)  # load config from this file , flaskr.py
@@ -81,11 +82,16 @@ def show_entries():
 
 @app.route('/api/search', methods=['GET'])
 def search_results():
-    #Establish connection to the db and show all
+    q = request.args.get('q')
+
+    if not q:
+        return '"error":"No query parameter provided"', 400
+
     db = get_db()
-    cur = db.execute('SELECT title, text FROM entries')
+    cur = db.execute('SELECT * FROM entries WHERE title=?', (q,))
     entries = cur.fetchall()
-    return "yay"
+
+    return jsonify([dict(ix) for ix in entries])
 
 
 @app.route('/add', methods=['POST'])
