@@ -1,7 +1,6 @@
 import os
 import sqlite3
 import requests
-import json
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, jsonify
 
@@ -53,7 +52,6 @@ def get_db():
 
 def http_post_request_to_postman(new_entry_title):
     """Sends a http post request to Postman-Echo with a specific apy-key. Returns status code"""
-
     postman_api_endpoint = "https://postman-echo.com/post"
     postman_representation_data = {'new_entry_title': new_entry_title}
     postman_representation_request = requests.post(url=postman_api_endpoint, data=postman_representation_data)
@@ -82,16 +80,29 @@ def show_entries():
 
 @app.route('/api/search', methods=['GET'])
 def search_results():
+    # Get the query parameters
     q = request.args.get('q')
 
+    # Throw an error if no parameters provided
     if not q:
         return '"error":"No query parameter provided"', 400
 
+    # Initiate connect with the database
     db = get_db()
-    cur = db.execute('SELECT * FROM entries WHERE title LIKE ?', ('%' + q + '%',))
-    entries = cur.fetchall()
 
-    return jsonify([dict(ix) for ix in entries])
+    # SQL query to find titles that are similar to q
+    cur = db.execute('SELECT * FROM entries WHERE title LIKE ?', ('%' + q + '%',))
+
+    # Fetch all the rows that match the query
+    rows = cur.fetchall()
+
+    # A list to store the fetched db rows converted to dictionary
+    results = []
+    for row in rows:
+        results.append(dict(row))
+
+    # The list of results is then converted to JSON
+    return jsonify(results)
 
 
 @app.route('/add', methods=['POST'])
@@ -99,6 +110,7 @@ def add_entry():
     if not session.get('logged_in'):
         abort(401)
 
+    # Assign variables to inputs from the user
     title = request.form['title']
     text = request.form['text']
 
@@ -107,8 +119,10 @@ def add_entry():
                [title, text])
     db.commit()
 
+    # Use the title of the new entry as the representative to be sent to Postman-Echo
     postman_api_response = http_post_request_to_postman(new_entry_title=title)
 
+    # Check and communicate the response of the Postman-Echo request
     if postman_api_response == 200:
         print("Postman response 200")
     else:
