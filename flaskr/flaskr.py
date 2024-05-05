@@ -74,7 +74,7 @@ def show_entries():
     return render_template('show_entries.html', entries=entries)
 
 
-@app.route('/api/search', methods=['GET'])
+@app.route('/api/search')
 def search_results():
     # Get the query parameter
     q = request.args.get('q')
