@@ -56,10 +56,6 @@ def http_post_request_to_postman(new_entry_title):
     postman_representation_data = {'new_entry_title': new_entry_title}
     postman_representation_request = requests.post(url=postman_api_endpoint, data=postman_representation_data)
 
-    # Prints the responses from Postman for testing
-    #print(postman_representation_request)
-    #print(postman_representation_request.json())
-
     return postman_representation_request.status_code
 
 
@@ -80,7 +76,7 @@ def show_entries():
 
 @app.route('/api/search', methods=['GET'])
 def search_results():
-    # Get the query parameters
+    # Get the query parameter
     q = request.args.get('q')
 
     # Throw an error if no parameters provided
