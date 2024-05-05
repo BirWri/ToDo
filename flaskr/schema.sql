@@ -1,7 +1,7 @@
 drop table if exists entries;
 create table entries (
-  id integer primary key autoincrement,
-  title text not null,
-  'text' text not null,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  text TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
