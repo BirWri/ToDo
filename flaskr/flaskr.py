@@ -116,10 +116,10 @@ def add_entry():
     db.commit()
 
     # Use the title of the new entry as the representative to be sent to Postman-Echo
-    postman_api_response = http_post_request_to_postman(new_entry_title=title)
+    postman_api_status = http_post_request_to_postman(new_entry_title=title)
 
     # Check and communicate the response of the Postman-Echo request
-    if postman_api_response == 200:
+    if postman_api_status == 200:
         print("Postman response 200")
     else:
         print("Error with Postman")
