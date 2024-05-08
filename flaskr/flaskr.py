@@ -110,25 +110,22 @@ def add_entry():
     title = request.form['title']
     text = request.form['text']
 
-    #db = get_db()
-    #db.execute('INSERT INTO entries (title, text) VALUES (?, ?)',
-              # [title, text])
-    #db.commit()
-
     # Use the title of the new entry as the representative to be sent to Postman-Echo
     postman_api_status = http_post_request_to_postman(new_entry_title=title)
 
     # Check and communicate the response of the Postman-Echo request
     if postman_api_status == 200:
         print("Postman response 200")
-        db = get_db()
-        db.commit()
-        db.execute('INSERT INTO entries (title, text) VALUES (?, ?)', [title, text])
-        flash('New entry was successfully posted')
+
     else:
         print("Error with Postman")
-        flash('Error: Post not made')
 
+    db = get_db()
+    db.execute('INSERT INTO entries (title, text, postman) VALUES (?, ?, ?)',
+               [title, text, postman_api_status, ])
+    db.commit()
+
+    flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
 
 
